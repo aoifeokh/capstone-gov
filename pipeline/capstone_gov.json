@@ -1,0 +1,29 @@
+{
+	"name": "capstone_gov",
+	"properties": {
+		"activities": [
+			{
+				"name": "rawtoclean",
+				"description": "This notebook takes in data from the ADLS raw container using a fixed schema, adds the relevant columns and puts this data in the ADLS clean container and the Azure SQL DBs.",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Repos/aoife.okane.hackett@avanade.com/capstone-gov/rawtoclean.ipynb"
+				},
+				"linkedServiceName": {
+					"referenceName": "Capstone Databricks",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
