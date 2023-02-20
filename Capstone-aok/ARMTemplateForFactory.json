@@ -52,7 +52,7 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"notebookPath": "/Repos/aoife.okane.hackett@avanade.com/capstone-gov/rawtoclean.ipynb"
+							"notebookPath": "/Users/aoife.okane.hackett@avanade.com/rawtoclean"
 						},
 						"linkedServiceName": {
 							"referenceName": "Capstone Databricks",
@@ -112,11 +112,109 @@
 							"referenceName": "capstone_gov_aok",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Send Email on Failure",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "rawtoclean",
+								"dependencyConditions": [
+									"Failed"
+								]
+							},
+							{
+								"activity": "Stage to Clean Junior",
+								"dependencyConditions": [
+									"Failed"
+								]
+							},
+							{
+								"activity": "Stage to Clean Senior",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://capstoneaok.azurewebsites.net:443/api/SendEmailFromPipeline/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=KDC6TerCDmJWJbBkgwliUCn_Qm8b533Ah6GlFFB1EMU",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"value": "{“EmailTo”: “@{pipeline().parameters.EmailTo}”,”Subject”: “An error has occured in the @{pipeline().Pipeline}-pipeline”,”DataFactoryName”: “@{pipeline().DataFactory}”,”PipelineName”: “@{pipeline().Pipeline}”,”Activity”: “@{pipeline().parameters.Activity}”,”ErrorMessage”: “@{pipeline().parameters.ErrorMessage}”}\n ",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Send Email on Success",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Stage to Clean Senior",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://capstoneaok.azurewebsites.net:443/api/SuccessEmail/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YcldyvEtCmecYHUcEAfMcx8oWdm_CyvoRd1PngZnujc",
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"EmailTo": "@{pipeline().parameters.EmailTo}",
+								"Subject": "Reload for @{pipeline().Pipeline}-pipeline completed",
+								"FactoryName": "@{pipeline().DataFactory}",
+								"PipelineName": "@{pipeline().Pipeline}",
+								"ActivityName": "@{pipeline().parameters.ActivityName}",
+								"Message": "@{pipeline().parameters.Message}"
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"parameters": {
+					"EmailTo": {
+						"type": "string",
+						"defaultValue": "aoife.okane.hackett@avanade.com"
+					},
+					"Message": {
+						"type": "string",
+						"defaultValue": "There has been an error in the pipeline."
+					},
+					"Activity": {
+						"type": "string",
+						"defaultValue": "Raw -> clean -> SQL staging -> SQL clean"
+					},
+					"ErrorMessage": {
+						"type": "string",
+						"defaultValue": "Error"
+					},
+					"ActivityName": {
+						"type": "string",
+						"defaultValue": "Raw -> clean -> SQL staging -> SQL clean"
+					}
 				},
 				"annotations": []
 			},
@@ -215,8 +313,7 @@
 						"frequency": "Month",
 						"interval": 1,
 						"startTime": "2023-03-01T17:00:00Z",
-						"timeZone": "UTC",
-						"schedule": {}
+						"timeZone": "UTC"
 					}
 				}
 			},
