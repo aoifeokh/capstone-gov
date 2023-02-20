@@ -16,7 +16,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Repos/aoife.okane.hackett@avanade.com/capstone-gov/rawtoclean.ipynb"
+					"notebookPath": "/Users/aoife.okane.hackett@avanade.com/rawtoclean"
 				},
 				"linkedServiceName": {
 					"referenceName": "Capstone Databricks",
@@ -114,7 +114,10 @@
 					"headers": {
 						"Content-Type": "application/json"
 					},
-					"body": "{“EmailTo”: “@{pipeline().parameters.EmailTo}”,”Subject”: “An error has occured in the @{pipeline().Pipeline}-pipeline”,”DataFactoryName”: “@{pipeline().DataFactory}”,”PipelineName”: “@{pipeline().Pipeline}”,”Activity”: “@{pipeline().parameters.Activity}”,”ErrorMessage”: “@{pipeline().parameters.ErrorMessage}”}\n "
+					"body": {
+						"value": "{“EmailTo”: “@{pipeline().parameters.EmailTo}”,”Subject”: “An error has occured in the @{pipeline().Pipeline}-pipeline”,”DataFactoryName”: “@{pipeline().DataFactory}”,”PipelineName”: “@{pipeline().Pipeline}”,”Activity”: “@{pipeline().parameters.Activity}”,”ErrorMessage”: “@{pipeline().parameters.ErrorMessage}”}\n ",
+						"type": "Expression"
+					}
 				}
 			},
 			{
@@ -162,6 +165,10 @@
 			"Activity": {
 				"type": "string",
 				"defaultValue": "Raw -> clean -> SQL staging -> SQL clean"
+			},
+			"ErrorMessage": {
+				"type": "string",
+				"defaultValue": "Error"
 			}
 		},
 		"annotations": []
