@@ -169,6 +169,10 @@
 			"ErrorMessage": {
 				"type": "string",
 				"defaultValue": "Error"
+			},
+			"ActivityName": {
+				"type": "string",
+				"defaultValue": "Raw -> clean -> SQL staging -> SQL clean"
 			}
 		},
 		"annotations": []
